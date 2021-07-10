@@ -13,7 +13,7 @@ export function Confirmation(){
     const nevigation = useNavigation(); 
 
     function handleStart(){
-        nevigation.navigate('UserIndetification')
+        nevigation.navigate('PlantSelect')
     }
 
     return(
@@ -34,6 +34,7 @@ export function Confirmation(){
                 <View style={styles.footer}>
                     <Button 
                         title='Começar'
+                        onPressOut={handleStart}
                     />
                 </View>
             </View>
