@@ -8,6 +8,8 @@ import api from '../services/api';
 import { Header } from '../components/Header';
 import { EnviromentButton } from '../components/EnviromentButton';
 import { PlantCard } from '../components/PlantCard';
+import { Loading } from '../components/Loading';
+
 interface EnviromentProps {
     key: string; 
     title: string;
@@ -34,6 +36,7 @@ export function PlantSelect(){
     //vai fazer os filtros, não sendo necessário fazer novamente requisições a cada chamada do estado. 
     const [ filteredPlants, setFilteredPlants ] = useState<PlantsProps[]>([]); 
     const [enviormentSelected, setEnviormentSelected] = useState('all');
+    const [loading, setLoagind] = useState(true); 
 
     
 
@@ -75,11 +78,15 @@ export function PlantSelect(){
         async function fetchPlants(){
             const { data } = await api.get('plants?_sort=name&_order=asc'); //que é o nome das categorias que queremos no json
             setPlants(data); 
+            setFilteredPlants(data); 
+            setLoagind(false); 
         }
         fetchPlants();
     }, [])
 
 
+    if(loading)
+        return <Loading /> 
     return(
         <View style={styles.container}>
             <View style={styles.header}>
