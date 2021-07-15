@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react'; 
-import { View, Text, StyleSheet, FlatList} from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
@@ -36,9 +36,17 @@ export function PlantSelect(){
     //vai fazer os filtros, não sendo necessário fazer novamente requisições a cada chamada do estado. 
     const [ filteredPlants, setFilteredPlants ] = useState<PlantsProps[]>([]); 
     const [enviormentSelected, setEnviormentSelected] = useState('all');
-    const [loading, setLoagind] = useState(true); 
+    const [loading, setLoaging] = useState(true); 
 
-    
+
+    //estados para paginação
+    //Cuida da página que estará com a paginação
+    const [page, setPage] = useState(1); 
+    //estado para ver se tem mais coisas para carregar
+    const [LoadingMore, setLoadingMore] = useState(false); 
+    //estado para ver se já carregou tudo 
+    const [loadedAll, setLoadedAll] = useState(false); 
+
 
     function handleEnvirormentSelected(category: string){
         setEnviormentSelected(category);
@@ -57,7 +65,40 @@ export function PlantSelect(){
 
             setFilteredPlants(filtered);
         }
-    }   
+    }
+
+    //Função para carregar os cards da api
+    async function fetchPlants(){
+        const { data } = await api
+        .get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`);
+
+        // Se não tiver nada para carregar, traga o setLoading, 
+        //porque significa que tudo já carregou. 
+        if(!data)
+            return setLoaging(true);
+
+        //se a página for maior que 1, vou pegar o valor antigo e adicionar com o que esta chegando de novo
+        //e juntar tudo no estado
+        if(page > 1){
+            setPlants(oldValue => [...oldValue, ...data]);
+            setFilteredPlants(oldValue => [...oldValue, ...data]);
+        }else{
+            setPlants(data); 
+            setFilteredPlants(data); 
+        }
+        setLoaging(false); //A animação de carregando principal
+        setLoadingMore(false); //A animação mostrando que tem mais carregando
+    }
+
+    //função da páginação
+    //Quando o usuário chegar ao final da rolagem, chame mais dados
+    function handleFetchMore(distance:number){
+        if(distance < 1)
+            return; 
+        setLoadingMore(true); 
+        setPage(oldValue => oldValue + 1); //vai virar página 2
+        fetchPlants();//chama a funçãoq ue carrega os dados da api
+    }
 
     useEffect(() => {
         async function fetchEnvirioment(){
@@ -75,12 +116,6 @@ export function PlantSelect(){
     }, [])
 
     useEffect(() => {
-        async function fetchPlants(){
-            const { data } = await api.get('plants?_sort=name&_order=asc'); //que é o nome das categorias que queremos no json
-            setPlants(data); 
-            setFilteredPlants(data); 
-            setLoagind(false); 
-        }
         fetchPlants();
     }, [])
 
@@ -126,6 +161,14 @@ export function PlantSelect(){
                     )}
                     showsVerticalScrollIndicator={false} // remover scroll 
                     numColumns={2} //mostrar a lista em 2 colunas
+                    onEndReachedThreshold={0.1} //quando o usuário chegar a 10% do final da tela faça o 'onEndReach'
+                    onEndReached={({ distanceFromEnd }) => handleFetchMore(distanceFromEnd) }
+                    ListFooterComponent={
+                        //aparecer só quando o LoadingMore for verdadeiro
+                        LoadingMore ?
+                        <ActivityIndicator color={colors.green}/>
+                        : <></> //quando não tiver mais nada, carregue i disfragmente que é nada. 
+                    }
                 />
             </View>
         </View>
