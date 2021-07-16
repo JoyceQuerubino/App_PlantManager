@@ -102,8 +102,10 @@ export function PlantSelect(){
     }
 
     //Selecionar o card e ir para a paǵina dele
-    function handlePlantSelect(planta: PlantsProps){
-        nevigation.navigate('PlantSave');
+    //os dados são chamados pela 'PlantsProps' e adicionados no parametro 'plant', 
+    //Assim quando chamarmos a página 'PlantSave' os dados ta,bém serão passados. 
+    function handlePlantSelect(plant: PlantsProps){
+        nevigation.navigate('PlantSave', { plant });
     };
 
     useEffect(() => {

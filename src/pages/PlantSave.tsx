@@ -10,6 +10,8 @@ import {
     TouchableOpacity,
 } from 'react-native'; 
 
+import { useRoute } from '@react-navigation/core'; //para recuperar valores passados pela rota
+
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 import { SvgFromUri } from 'react-native-svg';
 
@@ -18,21 +20,43 @@ import { Button } from '../components/Button';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
+// tipagem do Params, que foi copiada da tela PantSelect 
+interface Params {
+    plant: {
+        id: string;
+        name: string;
+        about: string;
+        water_tips: string;
+        photo: string;
+        environments: [string],
+        frequency: {
+          times: number;
+          repeat_every: string;
+        }
+    }
+}
+
 export function PlantSave(){
+
+    const route = useRoute(); 
+    //vamos recuperar o objeto 'plant', que é passado pela chamada da navegação da paǵina 'PlantSelect'
+    // através do 'as' é feita a tipagem do Params por uma interface. 
+    const { plant } = route.params as Params; 
+
     return(
         <View style={styles.container}>
             <View style={styles.plantInfo}> 
                 <SvgFromUri 
-                    uri=""
+                    uri={plant.photo}
                     width={150}
                     height={150}
                 />
                 
                 <Text style={styles.plantName}>
-                    Nome da planta
+                    {plant.name}
                 </Text>
                 <Text style={styles.plantAbout}>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Omnis rem sint quis quis quam dolorem cum aspernatur tempora?  
+                   {plant.about}
                 </Text>
             </View>
 
@@ -43,7 +67,7 @@ export function PlantSave(){
                         style={styles.tipImage}
                     />
                     <Text style={styles.tipText}>
-                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
+                       {plant.water_tips}
                     </Text>
                 </View>
 
