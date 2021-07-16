@@ -8,11 +8,13 @@ import {
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
     Platform,
-    Keyboard
+    Keyboard, 
+    Alert
 } from 'react-native'; 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Button } from '../components/Button'; 
 
@@ -24,8 +26,18 @@ export function UserIndetification(){
     const [isFilled, setIsFilled] = useState(false); //para ver se está preenchido
     const [name, setName] = useState<string>(); // para pegar o texto do usuário, vamos tipar como string
 
-    function handleConfirmation(){
-        nevigation.navigate('Confirmation')
+    async function handleConfirmation(){  
+         //verificar se o que tem dentro do nome é vazio
+         if(!name)
+         return Alert.alert('Me diz como chamar você 😥');
+
+         //chave- @ nome_do_app e o dado que quer salvar (@plantmanager:user) 
+        // e depois o valor que queremos salvar (estado 'name')
+        //o 'await' e o 'async'  vai fazer a função aguardar o nome ser salvo para então executar o restante da função. 
+        await AsyncStorage.setItem('@plantmanager:user', name)
+
+         nevigation.navigate('Confirmation')
+
     }
 
     function handleInputBlur(){
