@@ -1,5 +1,6 @@
 import React, { useEffect, useState} from 'react'; 
 import { View, Text, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
@@ -29,6 +30,8 @@ interface PlantsProps {
 
 
 export function PlantSelect(){
+
+    const nevigation = useNavigation(); 
 
     const [ enviroments, setEnviroments] = useState<EnviromentProps[]>([]); 
     const [ plants, setPlants] = useState<PlantsProps[]>([]); 
@@ -98,6 +101,11 @@ export function PlantSelect(){
         fetchPlants();//chama a funçãoq ue carrega os dados da api
     }
 
+    //Selecionar o card e ir para a paǵina dele
+    function handlePlantSelect(planta: PlantsProps){
+        nevigation.navigate('PlantSave');
+    };
+
     useEffect(() => {
         async function fetchEnvirioment(){
             const { data } = await api
@@ -157,7 +165,10 @@ export function PlantSelect(){
                     data={filteredPlants} //passa os dados filtrados
                     keyExtractor={(item) => String(item.id)}
                     renderItem={( {item} ) => (
-                        <PlantCard data={item} />
+                        <PlantCard 
+                            data={item} 
+                            onPress={() => handlePlantSelect(item)} //passamos o item que esta selecionado
+                        />
                     )}
                     showsVerticalScrollIndicator={false} // remover scroll 
                     numColumns={2} //mostrar a lista em 2 colunas
