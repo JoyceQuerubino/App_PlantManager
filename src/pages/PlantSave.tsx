@@ -9,11 +9,10 @@ import {
     Platform, 
     TouchableOpacity,
 } from 'react-native'; 
-
-import { useRoute } from '@react-navigation/core'; //para recuperar valores passados pela rota
-
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 import { SvgFromUri } from 'react-native-svg';
+import { useRoute } from '@react-navigation/core'; //para recuperar valores passados pela rota
+import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
 
 import waterDrop from '../assets/waterdrop.png';
 import { Button } from '../components/Button';
